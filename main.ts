@@ -2,26 +2,27 @@ import { App, Modal, Plugin, PluginSettingTab, Setting, moment } from 'obsidian'
 
 // Remember to rename these classes and interfaces!
 
-interface DiscordMentionsSettings {
+interface DiscordTimestampsSettings {
     mySetting: string;
 }
 
-const DEFAULT_SETTINGS: DiscordMentionsSettings = {
+const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     mySetting: 'default'
 }
 
-export default class DiscordMentions extends Plugin {
-    settings: DiscordMentionsSettings;
+export default class DiscordTimestamps extends Plugin {
+    settings: DiscordTimestampsSettings;
     async onload() {
         this.registerMarkdownPostProcessor((element, context) => {
-            const paragraphs = element.findAll('p');
 
-            for (let paragraph of paragraphs) {
-                let text = paragraph.innerText.trim();
-                const timestampRegex = /<t:(\d{10}):([dDtTfFR])>/g
+            function replaceTimestamp(element: Element) {
+                let text = element.textContent;
+                if (text == null) {
+                    return element;
+                }
                 let match;
-                while ((match = timestampRegex.exec(text)) !== null) {
-                    let time = moment.utc(match[1], 'X', true);
+                while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
+                    let time = moment(match[1], 'X', true);
                     let format;
                     let timeParsed = "";
                     switch (match[2]) {
@@ -47,16 +48,57 @@ export default class DiscordMentions extends Plugin {
                             timeParsed = time.fromNow();
                             break;
                     }
-                    if (timeParsed !== "") {
+                    if (timeParsed == "") {
                         timeParsed = time.format(format);
                     }
-                    text.replace(match[0], timeParsed);
+                    if (timeParsed !== "") {
+                        text = text.replace(match[0], timeParsed);
+                    }
                 }
-                paragraph.textContent = text;
+                element.textContent = text;
+                return element;
             }
+
+            const allElements = element.findAll("*");
+            // const elementsArray = Array.from(allElements)
+            for (let thisElement of allElements) {
+                let text = thisElement.textContent;
+                if (text == null) {
+                    return;
+                }
+                const newElement = replaceTimestamp(thisElement);
+
+                thisElement.replaceWith(newElement);
+            }
+
+            /* function replaceElement(tag: keyof HTMLElementTagNameMap) {
+                const allElements = element.findAll("h2");
+                const elementsArray = Array.from(allElements)
+                for (let thisElement of elementsArray) {
+                    let text = thisElement.textContent;
+                    if (text == null) {
+                        return;
+                    }
+                    const newElement = replaceTimestamp(thisElement);
+
+                    thisElement.replaceWith(newElement);
+                }
+            }
+            replaceElement('p');
+            replaceElement('span');
+            replaceElement('li');
+            replaceElement('strong');
+            replaceElement('em');
+            replaceElement('code');
+            replaceElement('h1');
+            replaceElement('h2');
+            replaceElement('h3');
+            replaceElement('h4');
+            replaceElement('h5');
+            replaceElement('h6'); */
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new DiscordMentionsSettingTab(this.app, this));
+        this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
     }
 
     onunload() {
@@ -72,10 +114,10 @@ export default class DiscordMentions extends Plugin {
     }
 }
 
-class DiscordMentionsSettingTab extends PluginSettingTab {
-    plugin: DiscordMentions;
+class DiscordTimestampsSettingTab extends PluginSettingTab {
+    plugin: DiscordTimestamps;
 
-    constructor(app: App, plugin: DiscordMentions) {
+    constructor(app: App, plugin: DiscordTimestamps) {
         super(app, plugin);
         this.plugin = plugin;
     }
