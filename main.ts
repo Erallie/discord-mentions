@@ -17,14 +17,12 @@ export default class DiscordTimestamps extends Plugin {
 
             function replaceTimestamp(element: HTMLElement) {
                 if (element.nodeType == element.TEXT_NODE) {
-                    const node = element as Node;
                     let text = element.textContent || "";
                     const originalText = text;
                     if (text == null || text == "") {
                         return element;
                     }
                     let match;
-                    // let updatedText = text;
                     while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
                         let time = moment(match[1], 'X', true);
                         let format;
@@ -59,25 +57,11 @@ export default class DiscordTimestamps extends Plugin {
                         }
                         text = text.replace(match[0], timeParsed);
                     }
-                    // const newTextNode = document.createTextNode(text);
-                    // element.replaceWith(newTextNode)
-                    // node.parentNode?.replaceChild(newTextNode, node);
-                    // element.parentElement?.replaceChild(newTextNode, node);
-                    if (text !== originalText) {/* 
-                        const newTextNode = document.createTextNode(text);
-                        element.appendChild(newTextNode); */
+                    if (text !== originalText) {
                         element.textContent = text;
-                        // timestampEl.textContent = text;
                     }
-                    // element.textContent = text;
-                    // let newElement = element;
-                    // element.replaceWith(newElement)
                 }
                 else if (element.nodeType == element.ELEMENT_NODE) {
-                    /* let children = Array.from(element.children);
-                    for (let child of children) {
-                        replaceTimestamp(child)
-                    } */
                     let child = element.firstChild as HTMLElement;
                     while (child) {
                         const nextChild = child.nextSibling;
@@ -89,43 +73,6 @@ export default class DiscordTimestamps extends Plugin {
 
             replaceTimestamp(element);
 
-            /* const allElements = element.findAll("*");
-            // const elementsArray = Array.from(allElements)
-            for (let thisElement of allElements) {
-                let text = thisElement.textContent;
-                if (text == null) {
-                    return;
-                }
-                const newElement = replaceTimestamp(thisElement);
-
-                // thisElement.replaceWith(newElement);
-            } */
-
-            /* function replaceElement(tag: keyof HTMLElementTagNameMap) {
-                const allElements = element.findAll(tag);
-                const elementsArray = Array.from(allElements)
-                for (let thisElement of elementsArray) {
-                    let text = thisElement.textContent;
-                    if (text == null) {
-                        return;
-                    }
-                    replaceTimestamp(thisElement);
-
-                    // thisElement.replaceWith(newElement);
-                }
-            }
-            replaceElement('strong');
-            replaceElement('em');
-            replaceElement('span');
-            replaceElement('li');
-            replaceElement('code');
-            replaceElement('h1');
-            replaceElement('h2');
-            replaceElement('h3');
-            replaceElement('h4');
-            replaceElement('h5');
-            replaceElement('h6');
-            replaceElement('p'); */
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
