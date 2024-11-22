@@ -15,72 +15,79 @@ export default class DiscordTimestamps extends Plugin {
     async onload() {
         this.registerMarkdownPostProcessor((element, context) => {
 
-            function replaceTimestamp(element: Element) {
-                // if (element.TEXT_NODE) {
-                // const node = element as Node;
-                let text = element.textContent || "";
-                if (text == null || text == "") {
-                    return element;
-                }
-                let match;
-                // let updatedText = text;
-                while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
-                    let time = moment(match[1], 'X', true);
-                    let format;
-                    let timeParsed = "";
-                    switch (match[2]) {
-                        case "d":
-                            format = "L";
-                            break;
-                        case "D":
-                            format = "LL";
-                            break;
-                        case "t":
-                            format = "LT";
-                            break;
-                        case "T":
-                            format = "LTS";
-                            break;
-                        case "f":
-                            format = "LLL";
-                            break;
-                        case "F":
-                            format = "LLLL";
-                            break;
-                        case "R":
-                            timeParsed = time.fromNow();
-                            break;
+            function replaceTimestamp(element: HTMLElement) {
+                if (element.nodeType == element.TEXT_NODE) {
+                    const node = element as Node;
+                    let text = element.textContent || "";
+                    const originalText = text;
+                    if (text == null || text == "") {
+                        return element;
                     }
-                    if (timeParsed == "") {
-                        timeParsed = time.format(format);
+                    let match;
+                    // let updatedText = text;
+                    while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
+                        let time = moment(match[1], 'X', true);
+                        let format;
+                        let timeParsed = "";
+                        switch (match[2]) {
+                            case "d":
+                                format = "L";
+                                break;
+                            case "D":
+                                format = "LL";
+                                break;
+                            case "t":
+                                format = "LT";
+                                break;
+                            case "T":
+                                format = "LTS";
+                                break;
+                            case "f":
+                                format = "LLL";
+                                break;
+                            case "F":
+                                format = "LLLL";
+                                break;
+                            case "R":
+                                timeParsed = time.fromNow();
+                                break;
+                            default:
+                                continue;
+                        }
+                        if (timeParsed == "") {
+                            timeParsed = time.format(format);
+                        }
+                        text = text.replace(match[0], timeParsed);
                     }
-                    text = text.replace(match[0], timeParsed);
+                    // const newTextNode = document.createTextNode(text);
+                    // element.replaceWith(newTextNode)
+                    // node.parentNode?.replaceChild(newTextNode, node);
+                    // element.parentElement?.replaceChild(newTextNode, node);
+                    if (text !== originalText) {/* 
+                        const newTextNode = document.createTextNode(text);
+                        element.appendChild(newTextNode); */
+                        element.textContent = text;
+                        // timestampEl.textContent = text;
+                    }
+                    // element.textContent = text;
+                    // let newElement = element;
+                    // element.replaceWith(newElement)
                 }
-                const newTextNode = document.createTextNode(text);
-                // element.replaceWith(newTextNode)
-                // node.parentNode?.replaceChild(newTextNode, node);
-                // element.parentElement?.replaceChild(newTextNode, node);
-
-                element.textContent = text;
-                /* let newElement = element;
-                newElement.textContent = text;
-                element.replaceWith(newElement) */
-                // }
-                // else if (element.ELEMENT_NODE) {
-                //     /* let children = Array.from(element.children);
-                //     for (let child of children) {
-                //         replaceTimestamp(child)
-                //     } */
-                //     let child = element.firstChild as Element;
-                //     while (child) {
-                //         const nextChild = child.nextSibling;
-                //         replaceTimestamp(child);
-                //         child = nextChild as Element;
-                //     }
-                // }
+                else if (element.nodeType == element.ELEMENT_NODE) {
+                    /* let children = Array.from(element.children);
+                    for (let child of children) {
+                        replaceTimestamp(child)
+                    } */
+                    let child = element.firstChild as HTMLElement;
+                    while (child) {
+                        const nextChild = child.nextSibling;
+                        replaceTimestamp(child);
+                        child = nextChild as HTMLElement;
+                    }
+                }
             }
 
-            // replaceTimestamp(element);
+            replaceTimestamp(element);
 
             /* const allElements = element.findAll("*");
             // const elementsArray = Array.from(allElements)
@@ -94,7 +101,7 @@ export default class DiscordTimestamps extends Plugin {
                 // thisElement.replaceWith(newElement);
             } */
 
-            function replaceElement(tag: keyof HTMLElementTagNameMap) {
+            /* function replaceElement(tag: keyof HTMLElementTagNameMap) {
                 const allElements = element.findAll(tag);
                 const elementsArray = Array.from(allElements)
                 for (let thisElement of elementsArray) {
@@ -118,7 +125,7 @@ export default class DiscordTimestamps extends Plugin {
             replaceElement('h4');
             replaceElement('h5');
             replaceElement('h6');
-            replaceElement('p');
+            replaceElement('p'); */
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
