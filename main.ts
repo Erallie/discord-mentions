@@ -16,50 +16,61 @@ export default class DiscordTimestamps extends Plugin {
         this.registerMarkdownPostProcessor((element, context) => {
 
             function replaceTimestamp(element: Element) {
-                let text = element.textContent;
-                if (text == null) {
-                    return element;
+                if (element.TEXT_NODE) {
+                    let text = element.textContent;
+                    if (text == null) {
+                        return element;
+                    }
+                    let match;
+                    while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
+                        let time = moment(match[1], 'X', true);
+                        let format;
+                        let timeParsed = "";
+                        switch (match[2]) {
+                            case "d":
+                                format = "L";
+                                break;
+                            case "D":
+                                format = "LL";
+                                break;
+                            case "t":
+                                format = "LT";
+                                break;
+                            case "T":
+                                format = "LTS";
+                                break;
+                            case "f":
+                                format = "LLL";
+                                break;
+                            case "F":
+                                format = "LLLL";
+                                break;
+                            case "R":
+                                timeParsed = time.fromNow();
+                                break;
+                        }
+                        if (timeParsed == "") {
+                            timeParsed = time.format(format);
+                        }
+                        if (timeParsed !== "") {
+                            text = text.replace(match[0], timeParsed);
+                        }
+                    }
+                    let newElement = element;
+                    newElement.textContent = text;
+                    element.replaceWith(newElement)
                 }
-                let match;
-                while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
-                    let time = moment(match[1], 'X', true);
-                    let format;
-                    let timeParsed = "";
-                    switch (match[2]) {
-                        case "d":
-                            format = "L";
-                            break;
-                        case "D":
-                            format = "LL";
-                            break;
-                        case "t":
-                            format = "LT";
-                            break;
-                        case "T":
-                            format = "LTS";
-                            break;
-                        case "f":
-                            format = "LLL";
-                            break;
-                        case "F":
-                            format = "LLLL";
-                            break;
-                        case "R":
-                            timeParsed = time.fromNow();
-                            break;
-                    }
-                    if (timeParsed == "") {
-                        timeParsed = time.format(format);
-                    }
-                    if (timeParsed !== "") {
-                        text = text.replace(match[0], timeParsed);
+                else if (element.ELEMENT_NODE) {
+                    let children = Array.from(element.children);
+                    for (let child of children) {
+                        replaceTimestamp(child)
                     }
                 }
-                element.textContent = text;
-                return element;
             }
 
-            const allElements = element.findAll("*");
+            replaceTimestamp(element);
+
+            /* const allElements = element.findAll("*");
             // const elementsArray = Array.from(allElements)
             for (let thisElement of allElements) {
                 let text = thisElement.textContent;
@@ -68,8 +79,8 @@ export default class DiscordTimestamps extends Plugin {
                 }
                 const newElement = replaceTimestamp(thisElement);
 
-                thisElement.replaceWith(newElement);
-            }
+                // thisElement.replaceWith(newElement);
+            } */
 
             /* function replaceElement(tag: keyof HTMLElementTagNameMap) {
                 const allElements = element.findAll("h2");
