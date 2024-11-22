@@ -1,17 +1,17 @@
-import { App, Modal, Plugin, PluginSettingTab, Setting, moment } from 'obsidian';
+import { Plugin, moment } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
-interface DiscordTimestampsSettings {
+/* interface DiscordTimestampsSettings {
     mySetting: string;
 }
 
 const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     mySetting: 'default'
-}
+} */
 
 export default class DiscordTimestamps extends Plugin {
-    settings: DiscordTimestampsSettings;
+    // settings: DiscordTimestampsSettings;
     async onload() {
         this.registerMarkdownPostProcessor((element, context) => {
 
@@ -75,23 +75,23 @@ export default class DiscordTimestamps extends Plugin {
 
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
+        // this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
     }
 
     onunload() {
 
     }
 
-    async loadSettings() {
+    /* async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
     async saveSettings() {
         await this.saveData(this.settings);
-    }
+    } */
 }
 
-class DiscordTimestampsSettingTab extends PluginSettingTab {
+/* class DiscordTimestampsSettingTab extends PluginSettingTab {
     plugin: DiscordTimestamps;
 
     constructor(app: App, plugin: DiscordTimestamps) {
@@ -115,4 +115,4 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
     }
-}
+} */
