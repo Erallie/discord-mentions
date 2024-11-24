@@ -2,7 +2,7 @@
 
 This is a plugin for [Obsidian](https://obsidian.md/) that displays **Discord Timestamps** (eg. `<t:1734818400:D>`) in **reading mode** the way they would display in Discord.
 
-There are no custom settings for this. As long as this plugin is enabled, it converts those timestamps.
+There are no custom settings for this. As long as this plugin is **enabled**, it converts those timestamps throughout the entire note when viewing it in **reading mode**.
 # Installation
 ## BRAT
 Install this plugin using [BRAT](https://obsidian.md/plugins?id=obsidian42-brat) by doing the following:
