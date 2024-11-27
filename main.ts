@@ -82,6 +82,9 @@ export default class DiscordTimestamps extends Plugin {
                                 newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' }).ariaLabel = timestampHover[i]
                             }
                         }
+                        if (text !== "") {
+                            newEl.appendText(text);
+                        }
 
                         element.replaceWith(newEl);
                     }
