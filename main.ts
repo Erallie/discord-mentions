@@ -10,6 +10,8 @@ const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     mySetting: 'default'
 } */
 
+
+
 export default class DiscordTimestamps extends Plugin {
     // settings: DiscordTimestampsSettings;
     async onload() {
@@ -23,6 +25,8 @@ export default class DiscordTimestamps extends Plugin {
                         return element;
                     }
                     let match;
+                    let textSlices: string[] = [];
+                    let timestampSlices: string[] = [];
                     while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
                         let time = moment(match[1], 'X', true);
                         let format;
@@ -55,14 +59,37 @@ export default class DiscordTimestamps extends Plugin {
                         if (timeParsed == "") {
                             timeParsed = time.format(format);
                         }
-                        text = text.replace(match[0], timeParsed);
+                        textSlices.push(text.slice(0, text.indexOf(match[0])))
+                        text = text.slice(text.indexOf(match[0]) + match[0].length);
+                        timestampSlices.push(timeParsed);
+                        // text = text.replace(match[0], timeParsed);
+                        // let newElement = element;
+
+                        // element.insertAdjacentHTML('beforeend', "testing")
                     }
                     if (text !== originalText) {
-                        element.textContent = text;
+                        let newEl = new DocumentFragment;
+                        for (let i = 0; i < textSlices.length; i++) {
+                            if (i == 0) {
+                                newEl.textContent = textSlices[i]
+                            }
+                            else {
+                                newEl.appendText(textSlices[i]);
+                            }
+                            if (i < timestampSlices.length) {
+                                newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' })
+                            }
+                        }
+
+                        element.replaceWith(newEl);
                     }
                 }
                 else if (element.nodeType == element.ELEMENT_NODE) {
                     let child = element.firstChild as HTMLElement;
+                    /* let children = Array.from(element.children);
+                    for (let child of children) {
+                        replaceTimestamp(child as HTMLElement)
+                    } */
                     while (child) {
                         const nextChild = child.nextSibling;
                         replaceTimestamp(child);

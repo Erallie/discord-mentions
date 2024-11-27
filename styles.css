@@ -6,3 +6,10 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+.discord-timestamps {
+    background-color: var(--background-modifier-hover);
+}
+
+.discord-timestamps:hover {
+    background-color: var(--background-modifier-active-hover);
+}
