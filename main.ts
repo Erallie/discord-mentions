@@ -27,6 +27,7 @@ export default class DiscordTimestamps extends Plugin {
                     let match;
                     let textSlices: string[] = [];
                     let timestampSlices: string[] = [];
+                    let timestampHover: string[] = [];
                     while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
                         let time = moment(match[1], 'X', true);
                         let format;
@@ -62,6 +63,7 @@ export default class DiscordTimestamps extends Plugin {
                         textSlices.push(text.slice(0, text.indexOf(match[0])))
                         text = text.slice(text.indexOf(match[0]) + match[0].length);
                         timestampSlices.push(timeParsed);
+                        timestampHover.push(time.format("LLLL"));
                         // text = text.replace(match[0], timeParsed);
                         // let newElement = element;
 
@@ -77,7 +79,7 @@ export default class DiscordTimestamps extends Plugin {
                                 newEl.appendText(textSlices[i]);
                             }
                             if (i < timestampSlices.length) {
-                                newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' })
+                                newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' }).ariaLabel = timestampHover[i]
                             }
                         }
 
