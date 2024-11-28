@@ -78,8 +78,11 @@ export default class DiscordTimestamps extends Plugin {
                             else {
                                 newEl.appendText(textSlices[i]);
                             }
-                            if (i < timestampSlices.length) {
+                            if (i < timestampSlices.length && i < timestampHover.length) {
                                 newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' }).ariaLabel = timestampHover[i]
+                            }
+                            else if (timestampSlices.length !== timestampHover.length) {
+                                console.error("The lengths of timestampSlices and timestampHover are NOT EQUAL!");
                             }
                         }
                         if (text !== "") {
