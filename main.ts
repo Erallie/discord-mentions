@@ -163,13 +163,19 @@ class TimestampModal extends Modal {
         const { contentEl, editor, view, cursor } = this;
         const modal = this;
         // contentEl.setText('Woah!');
-        let input = contentEl.createEl('input', {
+        let inputDiv = contentEl.createDiv();
+        inputDiv.addClass('timestamp-input-div')
+        inputDiv.createEl('label', { text: 'Choose a time', cls: 'timestamp-label' });
+        let input = inputDiv.createEl('input', {
+            cls: 'timestamp-input',
             attr: {
                 type: 'datetime-local'
             }
         })
         const now = moment();
         input.defaultValue = now.format("YYYY-MM-DD[T]kk:mm:ss");
+
+        contentEl.createEl('h2', { text: 'Pick your format', cls: 'timestamp-button-heading' })
 
         const div = contentEl.createDiv();
 

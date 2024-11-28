@@ -18,6 +18,23 @@ If your plugin does not need CSS, delete this file.
     color: var(--text-error);
 }
 
+.timestamp-input-div {
+    /* display: flex; */
+    max-width: 100%;
+    width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.timestamp-label {
+    margin: auto var(--size-4-4) auto auto;
+    text-align: right;
+}
+
+.timestamp-button-heading {
+    text-align: center;
+}
+
 .timestamp-buttons {
     text-align: center
 }
