@@ -128,6 +128,26 @@ export default class DiscordTimestamps extends Plugin {
             }
         })
 
+        this.registerEvent( //on editor menu
+            this.app.workspace.on("editor-menu", (menu, editor, info) => {
+                menu.addSeparator();
+
+                const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+                if (view) {
+                    menu.addItem(item => {
+                        item
+                            .setTitle('Insert Discord timestamp')
+                            .setIcon('lucide-alarm-clock-plus')
+                            .onClick(() => {
+                                new TimestampModal(this.app, editor, view, editor.getCursor()).open();
+                            })
+                    });
+                }
+
+            })
+
+        );
+
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
     }
