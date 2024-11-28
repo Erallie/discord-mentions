@@ -38,17 +38,17 @@ If your plugin does not need CSS, delete this file.
     text-align: center;
 }
 
-.timestamp-buttons.is-mobile {
+body.is-mobile .timestamp-buttons {
     display: block;
     width: 100%;
     margin: var(--size-4-2) auto;
 }
 
-.timestamp-button-container.is-mobile {
+body.is-mobile .timestamp-button-container {
     display: block;
 }
 
-.timestamp-button-container:not(.is-mobile) {
+body:not(.is-mobile) .timestamp-button-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
