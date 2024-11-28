@@ -1,4 +1,4 @@
-import { App, Plugin, moment, Notice, PluginSettingTab, Setting } from 'obsidian';
+import { App, Plugin, Modal, Editor, EditorPosition, MarkdownView, moment, Notice, PluginSettingTab, Setting } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -118,6 +118,16 @@ export default class DiscordTimestamps extends Plugin {
             replaceTimestamp(element);
 
         });
+
+        this.addCommand({
+            id: 'insert-timestamp',
+            name: 'Insert Discord timestamp',
+            icon: 'lucide-alarm-clock-plus',
+            editorCallback: (editor: Editor, view: MarkdownView) => {
+                new TimestampModal(this.app, editor, view, editor.getCursor()).open();
+            }
+        })
+
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
     }
@@ -132,6 +142,115 @@ export default class DiscordTimestamps extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+
+}
+
+class TimestampModal extends Modal {
+    editor: Editor;
+    view: MarkdownView;
+    cursor: EditorPosition;
+
+    constructor(app: App, editor: Editor, view: MarkdownView, cursor: EditorPosition) {
+        super(app);
+        this.editor = editor;
+        this.view = view;
+        this.cursor = cursor;
+    }
+
+    onOpen() {
+        const { contentEl, editor, view, cursor } = this;
+        const modal = this;
+        // contentEl.setText('Woah!');
+        let input = contentEl.createEl('input', {
+            attr: {
+                type: 'datetime-local'
+            }
+        })
+        const now = moment();
+        input.defaultValue = now.format("YYYY-MM-DD[T]kk:mm:ss");
+
+        const div = contentEl.createDiv();
+
+        // div.addClass('hide');
+
+        div.addClass('timestamp-button-container')
+
+        /* let child = div.firstChild as HTMLElement;
+        while (child) {
+            const nextChild = child.nextSibling;
+            child.addClass('timestamp-buttons');
+            child = nextChild as HTMLElement;
+        } */
+
+        function setClickEvents(date: moment.Moment) {
+            div.empty();
+            //#region add buttons
+            const button_d = div.createEl('button');
+            button_d.id = "d";
+            const button_D = div.createEl('button');
+            button_D.id = "D";
+            const button_t = div.createEl('button');
+            button_t.id = "t";
+            const button_T = div.createEl('button');
+            button_T.id = "T";
+            const button_f = div.createEl('button');
+            button_f.id = "f";
+            const button_F = div.createEl('button');
+            button_F.id = "F";
+            const button_R = div.createEl('button');
+            button_R.id = "R";
+            const button_unix = div.createEl('button');
+            button_unix.id = "unix";
+            //#endregion
+
+            //#region set button content
+            button_d.textContent = date.format('L');
+            button_D.textContent = date.format('LL');
+            button_t.textContent = date.format('LT');
+            button_T.textContent = date.format('LTS');
+            button_f.textContent = date.format('LLL');
+            button_F.textContent = date.format('LLLL');
+            button_R.textContent = date.fromNow();
+            button_unix.textContent = date.format('X');
+            //#endregion
+
+            let child = div.firstChild as HTMLElement;
+            while (child) {
+                const nextChild = child.nextSibling;
+                child.addClass('timestamp-buttons');
+                child.onClickEvent((ev) => {
+                    let insertedText: string;
+                    // console.log('got here')
+                    let button = ev.currentTarget as HTMLButtonElement;
+                    // console.log(child);
+                    if (button.id == "unix")//
+                        insertedText = date.format('X');
+                    else
+                        insertedText = `<t:${date.format('X')}:${button.id}>`;
+                    editor.replaceRange(insertedText, cursor);
+                    editor.setCursor(cursor.line, cursor.ch + insertedText.length);
+                    modal.close();
+                })
+                child = nextChild as HTMLElement;
+            }
+        }
+
+        setClickEvents(now);
+
+        input.onchange = (ev: Event) => {
+            // div.removeClass('hide');
+            const value = (ev.target as HTMLInputElement).value;
+            const date = moment(value, "YYYY-MM-DD[T]HH:mm")
+
+            setClickEvents(date);
+        }
+    }
+
+    onClose() {
+        const { contentEl } = this;
+        contentEl.empty();
     }
 }
 
