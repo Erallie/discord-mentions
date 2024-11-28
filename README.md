@@ -1,9 +1,11 @@
 # Discord Timestamps
 This is a plugin for [Obsidian](https://obsidian.md/) that displays **Discord Timestamps** (eg. `<t:1734818400:D>`) in **reading mode** the way they would display in Discord.
 
-There are no custom settings for this. As long as this plugin is **enabled**, it converts those timestamps throughout the entire note when viewing it in **reading mode**.
+As long as this plugin is **enabled**, it converts those timestamps throughout the entire note when viewing it in **reading mode**. You can optionally disable converting timestamps in codeblocks under **Settings → Discord Timestamps → Convert code blocks**.
 
 Just like in Discord, the timestamp will have a **colored background** to it. If you **hover** over the timestamp (on desktop) or **select** the timestamp (on mobile), the full date and time will be displayed.
+
+There is also a **command** in the [Command palette](https://help.obsidian.md/Plugins/Command+palette) as well as in the editor context menu to **insert a timestamp** when you are currently editing a note.
 # Installation
 ## BRAT
 To install this plugin using [BRAT](https://obsidian.md/plugins?id=obsidian42-brat), follow these steps:
