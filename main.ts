@@ -1,4 +1,4 @@
-import { Plugin, moment } from 'obsidian';
+import { Plugin, moment, Notice, Platform } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -79,7 +79,13 @@ export default class DiscordTimestamps extends Plugin {
                                 newEl.appendText(textSlices[i]);
                             }
                             if (i < timestampSlices.length && i < timestampHover.length) {
-                                newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' }).ariaLabel = timestampHover[i]
+                                let timestampEl = newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' });
+                                timestampEl.ariaLabel = timestampHover[i];
+                                timestampEl.onClickEvent((ev) => {
+                                    if (Platform.isMobile) {
+                                        new Notice(timestampHover[i]);
+                                    }
+                                })
                             }
                             else if (timestampSlices.length !== timestampHover.length) {
                                 console.error("The lengths of timestampSlices and timestampHover are NOT EQUAL!");
