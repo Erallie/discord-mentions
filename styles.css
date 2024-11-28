@@ -35,7 +35,7 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timestamp-buttons {
-    text-align: center
+    text-align: center;
 }
 
 .timestamp-button-container {
