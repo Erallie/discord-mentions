@@ -1,24 +1,29 @@
-import { Plugin, moment, Notice, Platform } from 'obsidian';
+import { App, Plugin, moment, Notice, PluginSettingTab, Setting } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
-/* interface DiscordTimestampsSettings {
-    mySetting: string;
+interface DiscordTimestampsSettings {
+    codeblocks: boolean;
 }
 
 const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
-    mySetting: 'default'
-} */
-
-
+    codeblocks: true
+}
 
 export default class DiscordTimestamps extends Plugin {
-    // settings: DiscordTimestampsSettings;
+    settings: DiscordTimestampsSettings;
+
     async onload() {
+        await this.loadSettings();
+        const plugin = this;
+
         this.registerMarkdownPostProcessor((element, context) => {
 
             function replaceTimestamp(element: HTMLElement) {
-                if (element.nodeType == element.TEXT_NODE) {
+                if (element.localName == "code" && plugin.settings.codeblocks == false) {
+                    return;
+                }
+                else if (element.nodeType == element.TEXT_NODE) {
                     let text = element.textContent || "";
                     const originalText = text;
                     if (text == null || text == "") {
@@ -114,23 +119,23 @@ export default class DiscordTimestamps extends Plugin {
 
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
-        // this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
+        this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
     }
 
     onunload() {
 
     }
 
-    /* async loadSettings() {
+    async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
     async saveSettings() {
         await this.saveData(this.settings);
-    } */
+    }
 }
 
-/* class DiscordTimestampsSettingTab extends PluginSettingTab {
+class DiscordTimestampsSettingTab extends PluginSettingTab {
     plugin: DiscordTimestamps;
 
     constructor(app: App, plugin: DiscordTimestamps) {
@@ -143,15 +148,22 @@ export default class DiscordTimestamps extends Plugin {
 
         containerEl.empty();
 
+        const codeFrag = new DocumentFragment;
+        codeFrag.textContent = 'Disable this to avoid converting timestamps within code blocks.'
+        codeFrag.createEl('br');
+        codeFrag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
+
         new Setting(containerEl)
-            .setName('UTC offset')
-            .setDesc('It\'s a secret')
-            .addText(text => text
-                .setPlaceholder('Enter your secret')
-                .setValue(this.plugin.settings.mySetting)
-                .onChange(async (value) => {
-                    this.plugin.settings.mySetting = value;
-                    await this.plugin.saveSettings();
-                }));
+            .setName('Convert code blocks')
+            .setDesc(codeFrag)
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.codeblocks)
+                    .onChange((value) => {
+                        this.plugin.settings.codeblocks = value;
+                        void this.plugin.saveSettings();
+                        // await this.plugin.loadSettings();
+                    })
+            );
     }
-} */
+}

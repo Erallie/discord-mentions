@@ -13,3 +13,7 @@ If your plugin does not need CSS, delete this file.
 .discord-timestamps:hover {
     background-color: var(--background-modifier-active-hover);
 }
+
+.setting-error {
+    color: var(--text-error);
+}
