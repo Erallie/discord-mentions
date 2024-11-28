@@ -19,9 +19,8 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timestamp-input-div {
-    /* display: flex; */
+    text-align: center;
     max-width: 100%;
-    width: 320px;
     margin-left: auto;
     margin-right: auto;
 }
