@@ -33,7 +33,7 @@ export default class DiscordTimestamps extends Plugin {
                     let textSlices: string[] = [];
                     let timestampSlices: string[] = [];
                     let timestampHover: string[] = [];
-                    while ((match = /<t:(\d{10}):([dDtTfFR])>/g.exec(text)) !== null) {
+                    while ((match = /<t:(\d{9,10}):([dDtTfFR])>/g.exec(text)) !== null) {
                         let time = moment(match[1], 'X', true);
                         let format;
                         let timeParsed = "";
