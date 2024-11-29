@@ -4,10 +4,12 @@ import { App, Plugin, Modal, Editor, EditorPosition, MarkdownView, moment, Notic
 
 interface DiscordTimestampsSettings {
     codeblocks: boolean;
+    mdCodeblocks: boolean;
 }
 
 const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
-    codeblocks: true
+    codeblocks: false,
+    mdCodeblocks: true
 }
 
 export default class DiscordTimestamps extends Plugin {
@@ -127,6 +129,9 @@ export default class DiscordTimestamps extends Plugin {
         });
 
         this.registerMarkdownPostProcessor((element, context) => {
+            if (!plugin.settings.mdCodeblocks)
+                return;
+
             let elements = element.findAll('code span.token');
 
             for (let el of elements) {
@@ -342,6 +347,23 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.codeblocks)
                     .onChange((value) => {
                         this.plugin.settings.codeblocks = value;
+                        void this.plugin.saveSettings();
+                        // await this.plugin.loadSettings();
+                    })
+            );
+
+        const mdCode = new DocumentFragment;
+        mdCode.textContent = 'Enable this to override markdown code blocks with this plugin\'s default class and appearance when converting timestamps.'
+        mdCode.createEl('br');
+        mdCode.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
+        new Setting(containerEl)
+            .setName('Override markdown code blocks')
+            .setDesc(mdCode)
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.mdCodeblocks)
+                    .onChange((value) => {
+                        this.plugin.settings.mdCodeblocks = value;
                         void this.plugin.saveSettings();
                         // await this.plugin.loadSettings();
                     })
