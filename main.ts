@@ -57,74 +57,73 @@ export default class DiscordTimestamps extends Plugin {
             };
         }
 
-        this.registerMarkdownPostProcessor((element, context) => {
-
-            function replaceTimestamp(element: HTMLElement) {
-                if (element.localName == "code" && plugin.settings.codeblocks == false) {
-                    return;
+        function replaceTimestamp(element: HTMLElement) {
+            if (element.localName == "code" && plugin.settings.codeblocks == false) {
+                return;
+            }
+            else if (element.nodeType == element.TEXT_NODE) {
+                let text = element.textContent || "";
+                const originalText = text;
+                if (text == null || text == "") {
+                    return element;
                 }
-                else if (element.nodeType == element.TEXT_NODE) {
-                    let text = element.textContent || "";
-                    const originalText = text;
-                    if (text == null || text == "") {
-                        return element;
-                    }
-                    let match;
-                    let textSlices: string[] = [];
-                    let timestampSlices: string[] = [];
-                    let timestampHover: string[] = [];
-                    while ((match = /<t:(\d{9,10}):([dDtTfFR])>/g.exec(text)) !== null) {
-                        let timestamp = processTimestamp(match);
+                let match;
+                let textSlices: string[] = [];
+                let timestampSlices: string[] = [];
+                let timestampHover: string[] = [];
+                while ((match = /<t:(\d{9,10}):([dDtTfFR])>/g.exec(text)) !== null) {
+                    let timestamp = processTimestamp(match);
 
-                        if (timestamp === null)
-                            continue;
+                    if (timestamp === null)
+                        continue;
 
-                        textSlices.push(text.slice(0, text.indexOf(match[0])))
-                        text = text.slice(text.indexOf(match[0]) + match[0].length);
-                        timestampSlices.push(timestamp.timeParsed);
-                        timestampHover.push(timestamp.full);
-                    }
-                    if (text !== originalText) {
-                        let newEl = new DocumentFragment;
-                        for (let i = 0; i < textSlices.length; i++) {
-                            if (i == 0) {
-                                newEl.textContent = textSlices[i]
-                            }
-                            else {
-                                newEl.appendText(textSlices[i]);
-                            }
-                            if (i < timestampSlices.length && i < timestampHover.length) {
-                                let timestampEl = newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' });
-                                timestampEl.ariaLabel = timestampHover[i];
-                                timestampEl.ontouchend = (ev) => {
-                                    new Notice(timestampHover[i]);
-                                }
-                            }
-                            else if (timestampSlices.length !== timestampHover.length) {
-                                console.error("The lengths of timestampSlices and timestampHover are NOT EQUAL!");
+                    textSlices.push(text.slice(0, text.indexOf(match[0])))
+                    text = text.slice(text.indexOf(match[0]) + match[0].length);
+                    timestampSlices.push(timestamp.timeParsed);
+                    timestampHover.push(timestamp.full);
+                }
+                if (text !== originalText) {
+                    let newEl = new DocumentFragment;
+                    for (let i = 0; i < textSlices.length; i++) {
+                        if (i == 0) {
+                            newEl.textContent = textSlices[i]
+                        }
+                        else {
+                            newEl.appendText(textSlices[i]);
+                        }
+                        if (i < timestampSlices.length && i < timestampHover.length) {
+                            let timestampEl = newEl.createEl('span', { text: timestampSlices[i], cls: 'discord-timestamps' });
+                            timestampEl.ariaLabel = timestampHover[i];
+                            timestampEl.ontouchend = (ev) => {
+                                new Notice(timestampHover[i]);
                             }
                         }
-                        if (text !== "") {
-                            newEl.appendText(text);
+                        else if (timestampSlices.length !== timestampHover.length) {
+                            console.error("The lengths of timestampSlices and timestampHover are NOT EQUAL!");
                         }
+                    }
+                    if (text !== "") {
+                        newEl.appendText(text);
+                    }
 
-                        element.replaceWith(newEl);
-                    }
-                }
-                else if (element.nodeType == element.ELEMENT_NODE) {
-                    let child = element.firstChild as HTMLElement;
-                    /* let children = Array.from(element.children);
-                    for (let child of children) {
-                        replaceTimestamp(child as HTMLElement)
-                    } */
-                    while (child) {
-                        const nextChild = child.nextSibling;
-                        replaceTimestamp(child);
-                        child = nextChild as HTMLElement;
-                    }
+                    element.replaceWith(newEl);
                 }
             }
+            else if (element.nodeType == element.ELEMENT_NODE) {
+                let child = element.firstChild as HTMLElement;
+                /* let children = Array.from(element.children);
+                for (let child of children) {
+                    replaceTimestamp(child as HTMLElement)
+                } */
+                while (child) {
+                    const nextChild = child.nextSibling;
+                    replaceTimestamp(child);
+                    child = nextChild as HTMLElement;
+                }
+            }
+        }
 
+        this.registerMarkdownPostProcessor((element, context) => {
             replaceTimestamp(element);
         });
 
@@ -132,7 +131,7 @@ export default class DiscordTimestamps extends Plugin {
             if (!plugin.settings.mdCodeblocks)
                 return;
 
-            let elements = element.findAll('code span.token');
+            let elements = element.findAll('code span.token.tag');
 
             for (let el of elements) {
                 let text = el.textContent;
@@ -157,6 +156,11 @@ export default class DiscordTimestamps extends Plugin {
                 }
 
                 el.replaceWith(newEl);
+            }
+
+            let elements2 = element.findAll('code span.token.content');
+            for (let el of elements2) {
+                replaceTimestamp(el);
             }
         }, 1000)
 
