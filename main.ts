@@ -58,7 +58,7 @@ export default class DiscordTimestamps extends Plugin {
         }
 
         function replaceTimestamp(element: HTMLElement) {
-            if (element.localName == "code" && plugin.settings.codeblocks == false) {
+            if (element.localName == "code" && (plugin.settings.codeblocks == false || (element.hasClass('language-md') && plugin.settings.mdCodeblocks == true))) {
                 return;
             }
             else if (element.nodeType == element.TEXT_NODE) {
