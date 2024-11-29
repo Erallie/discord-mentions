@@ -17,6 +17,44 @@ export default class DiscordTimestamps extends Plugin {
         await this.loadSettings();
         const plugin = this;
 
+        function processTimestamp(match: RegExpExecArray) {
+            let time = moment(match[1], 'X', true);
+            let format;
+            let timeParsed = "";
+            switch (match[2]) {
+                case "d":
+                    format = "L";
+                    break;
+                case "D":
+                    format = "LL";
+                    break;
+                case "t":
+                    format = "LT";
+                    break;
+                case "T":
+                    format = "LTS";
+                    break;
+                case "f":
+                    format = "LLL";
+                    break;
+                case "F":
+                    format = "LLLL";
+                    break;
+                case "R":
+                    timeParsed = time.fromNow();
+                    break;
+                default:
+                    return null;
+            }
+            if (timeParsed == "") {
+                timeParsed = time.format(format);
+            }
+            return {
+                timeParsed: timeParsed,
+                full: time.format("LLLL")
+            };
+        }
+
         this.registerMarkdownPostProcessor((element, context) => {
 
             function replaceTimestamp(element: HTMLElement) {
@@ -34,45 +72,15 @@ export default class DiscordTimestamps extends Plugin {
                     let timestampSlices: string[] = [];
                     let timestampHover: string[] = [];
                     while ((match = /<t:(\d{9,10}):([dDtTfFR])>/g.exec(text)) !== null) {
-                        let time = moment(match[1], 'X', true);
-                        let format;
-                        let timeParsed = "";
-                        switch (match[2]) {
-                            case "d":
-                                format = "L";
-                                break;
-                            case "D":
-                                format = "LL";
-                                break;
-                            case "t":
-                                format = "LT";
-                                break;
-                            case "T":
-                                format = "LTS";
-                                break;
-                            case "f":
-                                format = "LLL";
-                                break;
-                            case "F":
-                                format = "LLLL";
-                                break;
-                            case "R":
-                                timeParsed = time.fromNow();
-                                break;
-                            default:
-                                continue;
-                        }
-                        if (timeParsed == "") {
-                            timeParsed = time.format(format);
-                        }
+                        let timestamp = processTimestamp(match);
+
+                        if (timestamp === null)
+                            continue;
+
                         textSlices.push(text.slice(0, text.indexOf(match[0])))
                         text = text.slice(text.indexOf(match[0]) + match[0].length);
-                        timestampSlices.push(timeParsed);
-                        timestampHover.push(time.format("LLLL"));
-                        // text = text.replace(match[0], timeParsed);
-                        // let newElement = element;
-
-                        // element.insertAdjacentHTML('beforeend', "testing")
+                        timestampSlices.push(timestamp.timeParsed);
+                        timestampHover.push(timestamp.full);
                     }
                     if (text !== originalText) {
                         let newEl = new DocumentFragment;
@@ -116,8 +124,36 @@ export default class DiscordTimestamps extends Plugin {
             }
 
             replaceTimestamp(element);
-
         });
+
+        this.registerMarkdownPostProcessor((element, context) => {
+            let elements = element.findAll('code span.token');
+
+            for (let el of elements) {
+                let text = el.textContent;
+                if (!text)
+                    continue;
+                const match = /^<t:(\d{9,10}):([dDtTfFR])>$/.exec(text);
+                if (!match)
+                    continue;
+
+                let timestamp = processTimestamp(match);
+
+                if (timestamp === null)
+                    continue;
+
+                let newEl = new DocumentFragment
+
+                let timestampEl = newEl.createEl('span', { text: timestamp.timeParsed, cls: 'discord-timestamps' });
+                let timestampHover = timestamp.full;
+                timestampEl.ariaLabel = timestampHover;
+                timestampEl.ontouchend = (ev) => {
+                    new Notice(timestampHover);
+                }
+
+                el.replaceWith(newEl);
+            }
+        }, 1000)
 
         this.addCommand({
             id: 'insert-timestamp',
