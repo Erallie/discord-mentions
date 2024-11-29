@@ -9,6 +9,14 @@ There is also a **command** in the [Command palette](https://help.obsidian.md/Pl
 
 After you select a date and time in the modal that opens, it **generates timestamps** for you to use. Then you just select one, and it **inserts it into your note** at your cursor’s location.
 # Installation
+## Obsidian Marketplace
+To install this plugin via the Obsidian Marketplace, perform the following steps:
+1. Navigate to the Discord Timestamps page by either selecting [this link](https://obsidian.md/plugins?id=discord-timestamps) or doing the following:
+	1. Navigate to **Settings → Community plugins**
+	2. Select **Turn on community plugins**.
+	3. Select **Community plugins → Browse** and search for "Discord Timestamps".
+2. Select **Install**.
+3. To enable the plugin, select **Enable**.
 ## BRAT
 To install this plugin using [BRAT](https://obsidian.md/plugins?id=obsidian42-brat), follow these steps:
 1. Make sure the [BRAT](https://obsidian.md/plugins?id=obsidian42-brat) plugin is installed in your vault.
