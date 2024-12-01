@@ -300,7 +300,7 @@ class TimestampModal extends Modal {
                         insertedText = date.format('X');
                     else
                         insertedText = `<t:${date.format('X')}:${button.id}>`;
-                    editor.replaceRange(insertedText, cursor);
+                    editor.replaceSelection(insertedText);
                     editor.setCursor(cursor.line, cursor.ch + insertedText.length);
                     modal.close();
                 })
