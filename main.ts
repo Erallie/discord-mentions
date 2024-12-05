@@ -386,9 +386,7 @@ class TimestampModal extends Modal {
                 child.addClass('timestamp-buttons');
                 child.onClickEvent((ev) => {
                     let insertedText: string;
-                    // console.log('got here')
                     let button = ev.currentTarget as HTMLButtonElement;
-                    // console.log(child);
                     if (button.id == "unix")//
                         insertedText = date.format('X');
                     else
