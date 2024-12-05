@@ -8,6 +8,13 @@ Just like in Discord, the timestamp will have a **colored background** to it. If
 There is also a **command** in the [Command palette](https://help.obsidian.md/Plugins/Command+palette) as well as in the editor context menu to **insert a timestamp** when you are currently editing a note.
 
 After you select a date and time in the modal that opens, it **generates timestamps** for you to use. Then you just select one, and it **inserts it into your note** at your cursor’s location.
+### Timezone support
+Inserting timestamps supports specifying a **timezone** other than your local timezone for the timestamps to use.
+- The chosen date and time will use the **selected timezone** when **generating timestamps**.
+- **Reading mode** will still display all timestamps **in your local time**.
+### Timestamp history
+When inserting a timestamp, there is an option to **reuse timestamps** from your **recent history** prior to selecting a format.
+- The number of timestamps stored in your recent history can be adjusted under **Settings → Discord Timestamps → History count**.
 # Installation
 ## Obsidian Marketplace
 To install this plugin via the Obsidian Marketplace, perform the following steps:
