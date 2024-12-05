@@ -38,6 +38,10 @@ If your plugin does not need CSS, delete this file.
     text-align: center;
 }
 
+.timezone-options {
+    margin-top: var(--size-4-2);
+}
+
 body.is-mobile .timestamp-buttons {
     display: block;
     width: 100%;

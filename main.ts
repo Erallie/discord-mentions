@@ -1,4 +1,5 @@
-import { App, Plugin, Modal, Editor, EditorPosition, MarkdownView, moment, Notice, PluginSettingTab, Setting } from 'obsidian';
+import { App, Plugin, Modal, Editor, EditorPosition, MarkdownView, Notice, PluginSettingTab, Setting } from 'obsidian';
+import moment from 'moment-timezone';
 
 // Remember to rename these classes and interfaces!
 
@@ -12,8 +13,16 @@ const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     mdCodeblocks: true
 }
 
+interface Timezones {
+    zone: moment.Moment;
+    name: string;
+    abbr: string;
+    offset: string;
+}
+
 export default class DiscordTimestamps extends Plugin {
     settings: DiscordTimestampsSettings;
+    timezones: Timezones[];
 
     async onload() {
         await this.loadSettings();
@@ -169,7 +178,7 @@ export default class DiscordTimestamps extends Plugin {
             name: 'Insert Discord timestamp',
             icon: 'lucide-alarm-clock-plus',
             editorCallback: (editor: Editor, view: MarkdownView) => {
-                new TimestampModal(this.app, editor, view, editor.getCursor()).open();
+                new TimestampModal(this.app, editor, editor.getCursor(), plugin).open();
             }
         })
 
@@ -184,7 +193,7 @@ export default class DiscordTimestamps extends Plugin {
                             .setTitle('Insert Discord timestamp')
                             .setIcon('lucide-alarm-clock-plus')
                             .onClick(() => {
-                                new TimestampModal(this.app, editor, view, editor.getCursor()).open();
+                                new TimestampModal(this.app, editor, editor.getCursor(), plugin).open();
                             })
                     });
                 }
@@ -195,6 +204,48 @@ export default class DiscordTimestamps extends Plugin {
 
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new DiscordTimestampsSettingTab(this.app, this));
+
+        function setTimezones() {
+            let zoneNames = moment.tz.names();
+            let timezones: Timezones[] = [];
+            // let abbreviations: string[] = [];
+
+            for (let name of zoneNames) {
+                const zone = moment.tz(name);
+                const abbr = zone.zoneAbbr();
+                /* if (abbr.startsWith("+") || abbr.startsWith('-')) {
+                    if (abbreviations.includes(name)) {
+                        continue;
+                    }
+                    abbreviations.push(name)
+                }
+                else {
+                    if (abbreviations.includes(abbr)) {
+                        continue;
+                    }
+
+                    abbreviations.push(abbr);
+                } */
+                timezones.push({
+                    zone: zone,
+                    name: name,
+                    abbr: abbr,
+                    offset: zone.format('Z')
+                });
+            }
+
+            /* timezones.sort(function (zoneA, zoneB) {
+                const stringA = zoneA.offset.replace(':', '');
+                const stringB = zoneB.offset.replace(':', "");
+                const intA = parseInt(stringA);
+                const intB = parseInt(stringB);
+                return intB - intA;
+            }) */
+            return timezones;
+        }
+
+        plugin.timezones = setTimezones();
+
     }
 
     onunload() {
@@ -216,18 +267,18 @@ class TimestampModal extends Modal {
     editor: Editor;
     view: MarkdownView;
     cursor: EditorPosition;
+    plugin: DiscordTimestamps;
 
-    constructor(app: App, editor: Editor, view: MarkdownView, cursor: EditorPosition) {
+    constructor(app: App, editor: Editor, cursor: EditorPosition, plugin: DiscordTimestamps) {
         super(app);
         this.editor = editor;
-        this.view = view;
         this.cursor = cursor;
+        this.plugin = plugin;
     }
 
     onOpen() {
-        const { contentEl, editor, view, cursor } = this;
+        const { contentEl, editor, cursor, plugin } = this;
         const modal = this;
-        // contentEl.setText('Woah!');
         let inputDiv = contentEl.createDiv();
         inputDiv.addClass('timestamp-input-div')
         inputDiv.createEl('label', { text: 'Choose a time', cls: 'timestamp-label' });
@@ -239,6 +290,40 @@ class TimestampModal extends Modal {
         })
         const now = moment();
         input.defaultValue = now.format("YYYY-MM-DD[T]kk:mm:ss");
+        inputDiv.createEl('br');
+
+        inputDiv.createEl('label', { text: 'Choose a timezone', cls: 'timestamp-label' });
+        let timezone = inputDiv.createEl('select', {
+            cls: 'timezone-options',
+            attr: {
+                id: 'timezone',
+                name: 'timezone'
+            }
+        })
+
+
+
+        for (let zone of plugin.timezones) {
+            timezone.createEl('option', {
+                text: `${zone.name} (${zone.abbr})`,
+                cls: 'timezone-option',
+                attr: {
+                    value: zone.name
+                }
+            })
+        }
+
+        const localTimezone = moment.tz.guess(true);
+
+        timezone.value = localTimezone;
+
+        timezone.onchange = (ev: Event) => {
+            const offset = (ev.target as HTMLInputElement).value;
+
+            let date = moment.tz(input.value, "YYYY-MM-DD[T]HH:mm", offset)
+
+            setClickEvents(date);
+        }
 
         contentEl.createEl('h2', { text: 'Pick your format', cls: 'timestamp-button-heading' })
 
@@ -277,14 +362,14 @@ class TimestampModal extends Modal {
             //#endregion
 
             //#region set button content
-            button_d.textContent = date.format('L');
-            button_D.textContent = date.format('LL');
-            button_t.textContent = date.format('LT');
-            button_T.textContent = date.format('LTS');
-            button_f.textContent = date.format('LLL');
-            button_F.textContent = date.format('LLLL');
-            button_R.textContent = date.fromNow();
-            button_unix.textContent = date.format('X');
+            button_d.textContent = date.tz(localTimezone).format('L');
+            button_D.textContent = date.tz(localTimezone).format('LL');
+            button_t.textContent = date.tz(localTimezone).format('LT');
+            button_T.textContent = date.tz(localTimezone).format('LTS');
+            button_f.textContent = date.tz(localTimezone).format('LLL');
+            button_F.textContent = date.tz(localTimezone).format('LLLL');
+            button_R.textContent = date.tz(localTimezone).fromNow();
+            button_unix.textContent = date.tz(localTimezone).format('X');
             //#endregion
 
             let child = div.firstChild as HTMLElement;
@@ -299,7 +384,7 @@ class TimestampModal extends Modal {
                     if (button.id == "unix")//
                         insertedText = date.format('X');
                     else
-                        insertedText = `<t:${date.format('X')}:${button.id}>`;
+                        insertedText = `<t:${date.utc().format('X')}:${button.id}>`;
                     editor.replaceSelection(insertedText);
                     editor.setCursor(cursor.line, cursor.ch + insertedText.length);
                     modal.close();
@@ -311,9 +396,9 @@ class TimestampModal extends Modal {
         setClickEvents(now);
 
         input.onchange = (ev: Event) => {
-            // div.removeClass('hide');
             const value = (ev.target as HTMLInputElement).value;
-            const date = moment(value, "YYYY-MM-DD[T]HH:mm")
+            const offset = timezone.value;
+            let date = moment.tz(value, "YYYY-MM-DD[T]HH:mm", offset)
 
             setClickEvents(date);
         }
