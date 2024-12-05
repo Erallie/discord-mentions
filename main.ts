@@ -293,7 +293,7 @@ class TimestampModal extends Modal {
             }
         })
         const now = moment();
-        input.defaultValue = now.format("YYYY-MM-DD[T]kk:mm:ss");
+        input.value = now.format("YYYY-MM-DD[T]kk:mm:ss");
         //#endregion
 
         inputDiv.createEl('br');
