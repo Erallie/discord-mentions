@@ -534,7 +534,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName('History count')
+            .setName('History size')
             .setDesc('The maximum number of timestamps that will be stored in the history.')
             .addSlider(slider => slider
                 .setLimits(0, 10, 1)

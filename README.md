@@ -14,7 +14,7 @@ Inserting timestamps supports specifying a **timezone** other than your local ti
 - **Reading mode** will still display all timestamps **in your local time**.
 ### Timestamp history
 When inserting a timestamp, there is an option to **reuse timestamps** from your **recent history** prior to selecting a format.
-- The number of timestamps stored in your recent history can be adjusted under **Settings → Discord Timestamps → History count**.
+- The number of timestamps stored in your recent history can be adjusted under **Settings → Discord Timestamps → History size**.
 # Installation
 ## Obsidian Marketplace
 To install this plugin via the Obsidian Marketplace, perform the following steps:
