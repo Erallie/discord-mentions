@@ -303,8 +303,16 @@ class TimestampModal extends Modal {
         inputDiv.createEl('br');
 
         //#region timezone
-        inputDiv.createEl('label', { text: 'Choose a timezone', cls: 'timestamp-label' });
-        let timezone = inputDiv.createEl('select', {
+        const timezoneDiv = contentEl.createDiv()
+        timezoneDiv.addClass('timestamp-input-div')
+
+        timezoneDiv.createEl('label', {
+            text: 'Choose a timezone', cls: 'timestamp-label',
+            attr: {
+                id: 'timezone-label'
+            }
+        });
+        let timezone = timezoneDiv.createEl('select', {
             cls: 'timezone-options',
             attr: {
                 id: 'timezone',
@@ -340,7 +348,11 @@ class TimestampModal extends Modal {
             contentEl.createEl('h3', { text: 'Or', cls: 'timestamp-button-heading' })
             const historyDiv = contentEl.createDiv();
             historyDiv.addClass('timestamp-input-div')
-            historyDiv.createEl('label', { text: 'Choose from history', cls: 'timestamp-label' })
+            historyDiv.createEl('label', {
+                text: 'Choose from history', cls: 'timestamp-label', attr: {
+                    id: 'timestamp-history-label'
+                }
+            })
             let history = historyDiv.createEl('select', {
                 attr: {
                     id: 'history',
