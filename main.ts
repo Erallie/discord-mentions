@@ -308,8 +308,6 @@ class TimestampModal extends Modal {
             }
         })
 
-
-
         for (let zone of plugin.timezones) {
             timezone.createEl('option', {
                 text: `${zone.name} (${zone.abbr})`,
