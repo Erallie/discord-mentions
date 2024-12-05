@@ -6,11 +6,15 @@ import moment from 'moment-timezone';
 interface DiscordTimestampsSettings {
     codeblocks: boolean;
     mdCodeblocks: boolean;
+    history: string[];
+    historyCount: number;
 }
 
 const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     codeblocks: false,
-    mdCodeblocks: true
+    mdCodeblocks: true,
+    history: [],
+    historyCount: 5
 }
 
 interface Timezones {
@@ -332,6 +336,50 @@ class TimestampModal extends Modal {
 
         //#endregion
 
+        if (plugin.settings.history.length > 0) {
+            contentEl.createEl('h3', { text: 'Or', cls: 'timestamp-button-heading' })
+            const historyDiv = contentEl.createDiv();
+            historyDiv.addClass('timestamp-input-div')
+            historyDiv.createEl('label', { text: 'Choose from history', cls: 'timestamp-label' })
+            let history = historyDiv.createEl('select', {
+                attr: {
+                    id: 'history',
+                    name: 'history'
+                }
+            })
+
+            history.createEl('option', {
+                text: 'Select one',
+                attr: {
+                    hidden: true
+                }
+            })
+
+            for (let timestamp of plugin.settings.history) {
+                const slices = timestamp.split(" ");
+
+                const time = moment.tz(slices[0], moment.ISO_8601, slices[1]);
+                history.createEl('option', {
+                    text: time.format('LLLL') + " " + time.zoneAbbr(),
+                    attr: {
+                        value: timestamp
+                    }
+                })
+            }
+
+            history.onchange = (ev: Event) => {
+                const timeString = (ev.target as HTMLInputElement).value;
+                const slices = timeString.split(" ");
+
+                input.value = slices[0];
+                timezone.value = slices[1];
+
+                const date = moment.tz(slices[0], moment.ISO_8601, slices[1]);
+
+                setClickEvents(date);
+            }
+        }
+
         contentEl.createEl('h2', { text: 'Pick your format', cls: 'timestamp-button-heading' })
 
         const div = contentEl.createDiv();
@@ -392,6 +440,24 @@ class TimestampModal extends Modal {
                         insertedText = `<t:${date.utc().format('X')}:${button.id}>`;
                     editor.replaceSelection(insertedText);
                     editor.setCursor(cursor.line, cursor.ch + insertedText.length);
+
+                    let historyList = plugin.settings.history;
+                    let newTimestamp = `${input.value} ${timezone.value}`
+                    if (historyList.includes(newTimestamp) == false) {
+                        historyList.unshift(newTimestamp)
+                        const historyCount = plugin.settings.historyCount;
+                        if (historyList.length > historyCount) {
+                            historyList = historyList.slice(0, historyCount)
+                        }
+                        plugin.settings.history = historyList;
+
+                        void plugin.saveSettings();
+                    }
+                    else {
+                        console.log('got here')
+                    }
+
+
                     modal.close();
                 })
                 child = nextChild as HTMLElement;
@@ -462,5 +528,23 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                         // await this.plugin.loadSettings();
                     })
             );
+
+        new Setting(containerEl)
+            .setName('History count')
+            .setDesc('The maximum number of timestamps that will be stored in the history.')
+            .addSlider(slider => slider
+                .setLimits(0, 10, 1)
+                .setValue(this.plugin.settings.historyCount)
+                .setDynamicTooltip()
+                .onChange(async (value) => {
+                    this.plugin.settings.historyCount = value;
+                    let historyList = this.plugin.settings.history;
+                    if (historyList.length > value) {
+                        historyList = historyList.slice(0, value)
+                    }
+                    this.plugin.settings.history = historyList;
+                    await this.plugin.saveSettings();
+                })
+            )
     }
 }
