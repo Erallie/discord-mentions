@@ -279,8 +279,12 @@ class TimestampModal extends Modal {
     onOpen() {
         const { contentEl, editor, cursor, plugin } = this;
         const modal = this;
+
+        //#region input div
         let inputDiv = contentEl.createDiv();
         inputDiv.addClass('timestamp-input-div')
+
+        //#region time input
         inputDiv.createEl('label', { text: 'Choose a time', cls: 'timestamp-label' });
         let input = inputDiv.createEl('input', {
             cls: 'timestamp-input',
@@ -290,8 +294,11 @@ class TimestampModal extends Modal {
         })
         const now = moment();
         input.defaultValue = now.format("YYYY-MM-DD[T]kk:mm:ss");
+        //#endregion
+
         inputDiv.createEl('br');
 
+        //#region timezone
         inputDiv.createEl('label', { text: 'Choose a timezone', cls: 'timestamp-label' });
         let timezone = inputDiv.createEl('select', {
             cls: 'timezone-options',
@@ -324,6 +331,9 @@ class TimestampModal extends Modal {
 
             setClickEvents(date);
         }
+        //#endregion
+
+        //#endregion
 
         contentEl.createEl('h2', { text: 'Pick your format', cls: 'timestamp-button-heading' })
 
