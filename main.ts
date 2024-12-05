@@ -320,7 +320,7 @@ class TimestampModal extends Modal {
         timezone.onchange = (ev: Event) => {
             const offset = (ev.target as HTMLInputElement).value;
 
-            let date = moment.tz(input.value, "YYYY-MM-DD[T]HH:mm", offset)
+            let date = moment.tz(input.value, moment.ISO_8601, offset)
 
             setClickEvents(date);
         }
@@ -398,7 +398,7 @@ class TimestampModal extends Modal {
         input.onchange = (ev: Event) => {
             const value = (ev.target as HTMLInputElement).value;
             const offset = timezone.value;
-            let date = moment.tz(value, "YYYY-MM-DD[T]HH:mm", offset)
+            let date = moment.tz(value, moment.ISO_8601, offset)
 
             setClickEvents(date);
         }
