@@ -384,16 +384,8 @@ class TimestampModal extends Modal {
 
         const div = contentEl.createDiv();
 
-        // div.addClass('hide');
 
         div.addClass('timestamp-button-container')
-
-        /* let child = div.firstChild as HTMLElement;
-        while (child) {
-            const nextChild = child.nextSibling;
-            child.addClass('timestamp-buttons');
-            child = nextChild as HTMLElement;
-        } */
 
         function setClickEvents(date: moment.Moment) {
             div.empty();
