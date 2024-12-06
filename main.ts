@@ -8,13 +8,17 @@ interface DiscordTimestampsSettings {
     mdCodeblocks: boolean;
     history: string[];
     historyCount: number;
+    autoDetectTimezone: boolean;
+    localTimezone: string;
 }
 
 const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
     codeblocks: false,
     mdCodeblocks: true,
     history: [],
-    historyCount: 5
+    historyCount: 5,
+    autoDetectTimezone: true,
+    localTimezone: 'Universal'
 }
 
 interface Timezones {
@@ -481,9 +485,21 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        function addReloadError(text: string) {
+        function addReloadError(text: string | DocumentFragment) {
             const frag = new DocumentFragment;
-            frag.textContent = text;
+            if (typeof text === 'string') {
+                const textSlices = text.split('\n');
+
+                frag.textContent = textSlices[0];
+                for (let i = 1; i < textSlices.length; i++) {
+                    frag.createEl('br');
+                    frag.appendText(textSlices[i])
+                }
+            }
+            else if (text instanceof DocumentFragment) {
+                frag.appendChild(text)
+            }
+
             frag.createEl('br');
             frag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
             return frag;
@@ -541,5 +557,52 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 })
             )
+
+        new Setting(containerEl)
+            .setName('Auto-detect timezone')
+            .setDesc(addReloadError('Enable this to auto-detect your local timezone.'))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.autoDetectTimezone)
+                    .onChange((value) => {
+                        this.plugin.settings.autoDetectTimezone = value;
+                        const localTimezone = moment.tz.guess(true);
+                        this.plugin.settings.localTimezone = localTimezone;
+                        void this.plugin.saveSettings();
+                        this.display();
+
+                    })
+            );
+
+        const timezoneFrag = new DocumentFragment;
+        timezoneFrag.textContent = 'The timezone timestamps will be displayed in.';
+        timezoneFrag.createEl('br');
+        timezoneFrag.createEl('strong', { text: 'Auto-detect timezone' })
+        timezoneFrag.appendText(' must be ')
+        timezoneFrag.createEl('strong', { text: 'disabled' })
+        timezoneFrag.appendText(' to change this.')
+
+        new Setting(containerEl)
+            .setName('Local timezone')
+            .setDesc(addReloadError(timezoneFrag))
+            .addDropdown((dropdown) => {
+                for (let timezone of this.plugin.timezones) {
+                    dropdown.addOption(timezone.name, `${timezone.name} (${timezone.abbr})`)
+                }
+
+                dropdown
+                    .setValue(this.plugin.settings.localTimezone)
+                    .onChange((value) => {
+                        this.plugin.settings.localTimezone = value;
+                        void this.plugin.saveSettings();
+                    })
+                if (this.plugin.settings.autoDetectTimezone) {
+                    dropdown.setDisabled(true);
+                }
+                else {
+                    dropdown.setDisabled(false);
+                }
+            })
+
     }
 }
