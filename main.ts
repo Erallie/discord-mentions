@@ -215,19 +215,6 @@ export default class DiscordTimestamps extends Plugin {
             for (let name of zoneNames) {
                 const zone = moment.tz(name);
                 const abbr = zone.zoneAbbr();
-                /* if (abbr.startsWith("+") || abbr.startsWith('-')) {
-                    if (abbreviations.includes(name)) {
-                        continue;
-                    }
-                    abbreviations.push(name)
-                }
-                else {
-                    if (abbreviations.includes(abbr)) {
-                        continue;
-                    }
-
-                    abbreviations.push(abbr);
-                } */
                 timezones.push({
                     name: name,
                     abbr: abbr
