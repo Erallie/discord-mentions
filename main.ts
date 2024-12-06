@@ -578,7 +578,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                         this.plugin.settings.history = [];
                         void this.plugin.saveSettings();
                     })
-            })
+            });
         //#endregion
 
         //#region timezone
@@ -605,10 +605,10 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
         const timezoneFrag = new DocumentFragment;
         timezoneFrag.textContent = 'The timezone timestamps will be displayed in.';
         timezoneFrag.createEl('br');
-        timezoneFrag.createEl('strong', { text: 'Auto-detect timezone' })
-        timezoneFrag.appendText(' must be ')
-        timezoneFrag.createEl('strong', { text: 'disabled' })
-        timezoneFrag.appendText(' to change this.')
+        timezoneFrag.createEl('strong', { text: 'Auto-detect timezone' });
+        timezoneFrag.appendText(' must be ');
+        timezoneFrag.createEl('strong', { text: 'disabled' });
+        timezoneFrag.appendText(' to change this.');
 
         new Setting(containerEl)
             .setName('Local timezone')
@@ -630,7 +630,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                 else {
                     dropdown.setDisabled(false);
                 }
-            })
+            });
         //#endregion
 
     }
