@@ -18,10 +18,8 @@ const DEFAULT_SETTINGS: DiscordTimestampsSettings = {
 }
 
 interface Timezones {
-    zone: moment.Moment;
     name: string;
     abbr: string;
-    offset: string;
 }
 
 export default class DiscordTimestamps extends Plugin {
@@ -231,10 +229,8 @@ export default class DiscordTimestamps extends Plugin {
                     abbreviations.push(abbr);
                 } */
                 timezones.push({
-                    zone: zone,
                     name: name,
-                    abbr: abbr,
-                    offset: zone.format('Z')
+                    abbr: abbr
                 });
             }
 
