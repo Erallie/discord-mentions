@@ -422,7 +422,7 @@ class TimestampModal extends Modal {
                     let insertedText: string;
                     let button = ev.currentTarget as HTMLButtonElement;
                     if (button.id == "unix")//
-                        insertedText = date.format('X');
+                        insertedText = date.utc().format('X');
                     else
                         insertedText = `<t:${date.utc().format('X')}:${button.id}>`;
                     editor.replaceSelection(insertedText);
