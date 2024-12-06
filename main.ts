@@ -574,6 +574,19 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
+            .setName('Clear history')
+            .setDesc('Press this button to clear the cached history.')
+            .addButton((button) => {
+                button
+                    .setIcon('lucide-trash-2')
+                    .setWarning()
+                    .onClick((ev: MouseEvent) => {
+                        this.plugin.settings.history = [];
+                        void this.plugin.saveSettings();
+                    })
+            })
+
+        new Setting(containerEl)
             .setName('Timezone')
             .setHeading();
 
