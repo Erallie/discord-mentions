@@ -516,11 +516,6 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             .setName('Conversion overrides')
             .setHeading();
 
-        /* const codeFrag = new DocumentFragment;
-        codeFrag.textContent = 'Disable this to avoid converting timestamps within code blocks.'
-        codeFrag.createEl('br');
-        codeFrag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' }) */
-
         new Setting(containerEl)
             .setName('Convert code blocks')
             .setDesc(addReloadError('Disable this to avoid converting timestamps within code blocks.'))
@@ -534,10 +529,6 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     })
             );
 
-        /* const mdCode = new DocumentFragment;
-        mdCode.textContent = 'Enable this to override markdown code blocks with this plugin\'s default class and appearance when converting timestamps.'
-        mdCode.createEl('br');
-        mdCode.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' }) */
         new Setting(containerEl)
             .setName('Override markdown code blocks')
             .setDesc(addReloadError('Enable this to override markdown code blocks with this plugin\'s default class and appearance when converting timestamps.'))
