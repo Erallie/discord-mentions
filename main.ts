@@ -297,12 +297,12 @@ class TimestampModal extends Modal {
 
         inputDiv.createEl('br');
 
-        //#region timezone
+        //#region time zone
         const timezoneDiv = contentEl.createDiv()
         timezoneDiv.addClass('timestamp-input-div')
 
         timezoneDiv.createEl('label', {
-            text: 'Choose a timezone', cls: 'timestamp-label',
+            text: 'Choose a time zone', cls: 'timestamp-label',
             attr: {
                 id: 'timezone-label'
             }
@@ -581,14 +581,14 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             });
         //#endregion
 
-        //#region timezone
+        //#region time zone
         new Setting(containerEl)
-            .setName('Timezone')
+            .setName('Time zone')
             .setHeading();
 
         new Setting(containerEl)
-            .setName('Auto-detect timezone')
-            .setDesc(addReloadError('Enable this to auto-detect your local timezone.'))
+            .setName('Auto-detect time zone')
+            .setDesc(addReloadError('Enable this to auto-detect your local time zone.'))
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.autoDetectTimezone)
@@ -603,15 +603,15 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             );
 
         const timezoneFrag = new DocumentFragment;
-        timezoneFrag.textContent = 'The timezone timestamps will be displayed in.';
+        timezoneFrag.textContent = 'The time zone timestamps will be displayed in.';
         timezoneFrag.createEl('br');
-        timezoneFrag.createEl('strong', { text: 'Auto-detect timezone' });
+        timezoneFrag.createEl('strong', { text: 'Auto-detect time zone' });
         timezoneFrag.appendText(' must be ');
         timezoneFrag.createEl('strong', { text: 'disabled' });
         timezoneFrag.appendText(' to change this.');
 
         new Setting(containerEl)
-            .setName('Local timezone')
+            .setName('Local time zone')
             .setDesc(addReloadError(timezoneFrag))
             .addDropdown((dropdown) => {
                 for (let timezone of this.plugin.timezones) {
