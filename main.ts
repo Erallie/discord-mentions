@@ -571,7 +571,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     this.plugin.settings.history = historyList;
                     void this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName('Timezone')
