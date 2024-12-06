@@ -512,6 +512,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             return frag;
         }
 
+        //#region conversion overrides
         new Setting(containerEl)
             .setName('Conversion overrides')
             .setHeading();
@@ -541,7 +542,9 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                         // await this.plugin.loadSettings();
                     })
             );
+        //#endregion
 
+        //#region history
         new Setting(containerEl)
             .setName('History')
             .setHeading();
@@ -576,7 +579,9 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                         void this.plugin.saveSettings();
                     })
             })
+        //#endregion
 
+        //#region timezone
         new Setting(containerEl)
             .setName('Timezone')
             .setHeading();
@@ -626,6 +631,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     dropdown.setDisabled(false);
                 }
             })
+        //#endregion
 
     }
 }
