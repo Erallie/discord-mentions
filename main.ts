@@ -512,6 +512,10 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             return frag;
         }
 
+        new Setting(containerEl)
+            .setName('Conversion overrides')
+            .setHeading();
+
         /* const codeFrag = new DocumentFragment;
         codeFrag.textContent = 'Disable this to avoid converting timestamps within code blocks.'
         codeFrag.createEl('br');
@@ -548,6 +552,10 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
+            .setName('History')
+            .setHeading();
+
+        new Setting(containerEl)
             .setName('History size')
             .setDesc('The maximum number of timestamps that will be stored in the history.')
             .addSlider(slider => slider
@@ -564,6 +572,10 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 })
             )
+
+        new Setting(containerEl)
+            .setName('Timezone')
+            .setHeading();
 
         new Setting(containerEl)
             .setName('Auto-detect timezone')
