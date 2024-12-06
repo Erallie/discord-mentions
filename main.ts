@@ -34,6 +34,12 @@ export default class DiscordTimestamps extends Plugin {
         await this.loadSettings();
         const plugin = this;
 
+        if (this.settings.autoDetectTimezone) {
+            const localTimezone = moment.tz.guess(true);
+            this.settings.localTimezone = localTimezone;
+            void this.saveSettings();
+        }
+
         function processTimestamp(match: RegExpExecArray) {
             let time = moment(match[1], 'X', true);
             let format;
@@ -64,11 +70,11 @@ export default class DiscordTimestamps extends Plugin {
                     return null;
             }
             if (timeParsed == "") {
-                timeParsed = time.format(format);
+                timeParsed = time.tz(plugin.settings.localTimezone).format(format);
             }
             return {
                 timeParsed: timeParsed,
-                full: time.format("LLLL")
+                full: time.tz(plugin.settings.localTimezone).format("LLLL")
             };
         }
 
@@ -271,6 +277,8 @@ class TimestampModal extends Modal {
         const { contentEl, editor, cursor, plugin } = this;
         const modal = this;
 
+        const localTimezone = plugin.settings.localTimezone;
+
         //#region input div
         let inputDiv = contentEl.createDiv();
         inputDiv.addClass('timestamp-input-div')
@@ -283,7 +291,7 @@ class TimestampModal extends Modal {
                 type: 'datetime-local'
             }
         })
-        const now = moment();
+        const now = moment().tz(localTimezone);
         input.value = now.format("YYYY-MM-DD[T]kk:mm:ss");
         //#endregion
 
@@ -317,7 +325,6 @@ class TimestampModal extends Modal {
             })
         }
 
-        const localTimezone = moment.tz.guess(true);
 
         timezone.value = localTimezone;
 
