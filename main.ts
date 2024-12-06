@@ -569,7 +569,7 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                         historyList = historyList.slice(0, value)
                     }
                     this.plugin.settings.history = historyList;
-                    await this.plugin.saveSettings();
+                    void this.plugin.saveSettings();
                 })
             )
 
