@@ -481,14 +481,22 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        const codeFrag = new DocumentFragment;
+        function addReloadError(text: string) {
+            const frag = new DocumentFragment;
+            frag.textContent = text;
+            frag.createEl('br');
+            frag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
+            return frag;
+        }
+
+        /* const codeFrag = new DocumentFragment;
         codeFrag.textContent = 'Disable this to avoid converting timestamps within code blocks.'
         codeFrag.createEl('br');
-        codeFrag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
+        codeFrag.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' }) */
 
         new Setting(containerEl)
             .setName('Convert code blocks')
-            .setDesc(codeFrag)
+            .setDesc(addReloadError('Disable this to avoid converting timestamps within code blocks.'))
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.codeblocks)
@@ -499,13 +507,13 @@ class DiscordTimestampsSettingTab extends PluginSettingTab {
                     })
             );
 
-        const mdCode = new DocumentFragment;
+        /* const mdCode = new DocumentFragment;
         mdCode.textContent = 'Enable this to override markdown code blocks with this plugin\'s default class and appearance when converting timestamps.'
         mdCode.createEl('br');
-        mdCode.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' })
+        mdCode.createEl('span', { text: 'Changing this requires reopening the active note.', cls: 'setting-error' }) */
         new Setting(containerEl)
             .setName('Override markdown code blocks')
-            .setDesc(mdCode)
+            .setDesc(addReloadError('Enable this to override markdown code blocks with this plugin\'s default class and appearance when converting timestamps.'))
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.mdCodeblocks)
