@@ -451,9 +451,6 @@ class TimestampModal extends Modal {
 
                         void plugin.saveSettings();
                     }
-                    else {
-                        console.log('got here')
-                    }
 
 
                     modal.close();
