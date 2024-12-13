@@ -429,15 +429,15 @@ class TimestampModal extends Modal {
             while (child) {
                 const nextChild = child.nextSibling;
                 child.addClass('timestamp-buttons');
+                let timestampStr: string;
+                if (child.id == "unix")
+                    timestampStr = date.utc().format('X');
+                else
+                    timestampStr = `<t:${date.utc().format('X')}:${child.id}>`;
+                child.ariaLabel = timestampStr;
                 child.onClickEvent((ev) => {
-                    let insertedText: string;
-                    let button = ev.currentTarget as HTMLButtonElement;
-                    if (button.id == "unix")//
-                        insertedText = date.utc().format('X');
-                    else
-                        insertedText = `<t:${date.utc().format('X')}:${button.id}>`;
-                    editor.replaceSelection(insertedText);
-                    editor.setCursor(cursor.line, cursor.ch + insertedText.length);
+                    editor.replaceSelection(timestampStr);
+                    editor.setCursor(cursor.line, cursor.ch + timestampStr.length);
 
                     let historyList = plugin.settings.history;
                     let newTimestamp = `${input.value} ${timezone.value}`
